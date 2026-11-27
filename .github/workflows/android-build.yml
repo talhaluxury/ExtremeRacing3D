@@ -1,0 +1,135 @@
+# Builds Extreme Racing 3D with Godot 4.3 on a free GitHub runner.
+#  - push to main / manual run  -> debug APK (always)
+#  - manual run, build_aab=true  -> signed release AAB (needs the 4 secrets below)
+# STATUS: written carefully but NOT yet run. If a step fails, open its log in the
+# Actions tab (or download the "build-log" artifact) and send it to Claude.
+#
+# Secrets for the AAB (Settings > Secrets and variables > Actions). Never commit them:
+#   ANDROID_KEYSTORE_BASE64   base64 of your release .keystore file
+#   ANDROID_KEYSTORE_USER     key alias
+#   ANDROID_KEYSTORE_PASSWORD keystore + key password
+name: Android Build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      build_aab:
+        description: "Also build a signed release AAB (needs the secrets)"
+        type: boolean
+        default: false
+
+env:
+  GODOT_VERSION: "4.3.0"
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: "platform-tools"   # default "tools" no longer exists in the new SDK manager
+
+      - name: Install Android SDK packages
+        run: |
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager "platform-tools" "build-tools;34.0.0" "platforms;android-34" "cmdline-tools;latest"
+
+      - uses: chickensoft-games/setup-godot@v2
+        with:
+          version: ${{ env.GODOT_VERSION }}
+          use-dotnet: false
+          include-templates: true
+
+      - name: Use the fixed debug keystore and bump the version
+        # The same keystore on every build = same signature, so the phone installs
+        # the new APK as an UPDATE (no uninstall). version/code must grow every build.
+        run: |
+          cp android/extremeracing-debug.keystore "$HOME/debug.keystore"
+          CODE=$((100 + ${{ github.run_number }}))
+          sed -i "s|^version/code=.*|version/code=$CODE|" export_presets.cfg
+          sed -i "s|^version/name=.*|version/name=\"0.8.${{ github.run_number }}\"|" export_presets.cfg
+          grep -n "^version/" export_presets.cfg
+
+      - name: Configure Godot editor settings
+        run: |
+          mkdir -p "$HOME/.config/godot"
+          cat > "$HOME/.config/godot/editor_settings-4.3.tres" <<EOF2
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/android_sdk_path = "$ANDROID_HOME"
+          export/android/java_sdk_path = "$JAVA_HOME"
+          export/android/debug_keystore = "$HOME/debug.keystore"
+          export/android/debug_keystore_user = "androiddebugkey"
+          export/android/debug_keystore_pass = "android"
+          EOF2
+
+      - name: Import project (fails on GDScript errors)
+        run: |
+          mkdir -p build
+          godot --headless --import 2>&1 | tee build/import.log || true
+          # second pass: scripts are now registered, so global class names resolve
+          godot --headless --import 2>&1 | tee -a build/import.log || true
+          grep -E "SCRIPT ERROR|Parse Error|ERROR:|at: GDScript" build/import.log | awk '!seen[$0]++' > build/script-errors.log || true
+          if grep -q "SCRIPT ERROR" build/script-errors.log; then
+            { echo "## GDScript errors"; echo '```'; head -n 60 build/script-errors.log; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::GDScript errors found - open the run Summary page or the build-log artifact (script-errors.log)"
+            exit 1
+          fi
+
+      - name: Export debug APK
+        run: godot --headless --verbose --export-debug "Android" build/ExtremeRacing3D-debug.apk 2>&1 | tee build/export-apk.log; test -s build/ExtremeRacing3D-debug.apk
+
+      - name: Export release AAB
+        if: ${{ github.event.inputs.build_aab == 'true' }}
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          GODOT_ANDROID_KEYSTORE_RELEASE_USER: ${{ secrets.ANDROID_KEYSTORE_USER }}
+          GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$KS_B64" ]; then echo "::error::Secret ANDROID_KEYSTORE_BASE64 is missing"; exit 1; fi
+          echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/release.keystore"
+          export GODOT_ANDROID_KEYSTORE_RELEASE_PATH="$RUNNER_TEMP/release.keystore"
+          # Gradle build template from the installed export templates
+          TPL=$(find "$HOME/.local/share/godot/export_templates" -name android_source.zip | head -n1)
+          test -n "$TPL" || { echo "::error::android_source.zip not found in export templates"; exit 1; }
+          mkdir -p android/build
+          unzip -q -o "$TPL" -d android/build
+          echo "4.3.stable" > android/.build_version
+          touch android/build/.gdignore
+          godot --headless --verbose --export-release "Android AAB" build/ExtremeRacing3D-release.aab 2>&1 | tee build/export-aab.log
+          test -s build/ExtremeRacing3D-release.aab
+          rm -f "$RUNNER_TEMP/release.keystore"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ExtremeRacing3D-debug-apk
+          path: build/*.apk
+          if-no-files-found: warn
+
+      - name: Upload AAB
+        if: ${{ github.event.inputs.build_aab == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ExtremeRacing3D-release-aab
+          path: build/*.aab
+          if-no-files-found: warn
+
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build/*.log
+          if-no-files-found: ignore

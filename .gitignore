@@ -1,0 +1,7 @@
+.godot/
+build/
+android/build/
+android/.build_version
+*.jks
+*.keystore
+!android/extremeracing-debug.keystore
