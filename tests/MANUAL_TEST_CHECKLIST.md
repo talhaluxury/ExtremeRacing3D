@@ -88,3 +88,8 @@
 - [ ] Time Trial: finish a lap, the next lap shows a transparent blue ghost car repeating your best lap
 - [ ] A slower lap does not replace the ghost; a faster one does; the ghost is still there after restarting the app
 - [ ] Quick Race and Free Drive show no ghost
+
+## Phase 14 (GLB cars)
+- [ ] Add one .glb with tools/add_car.sh: it shows in the garage and in the race, right size, on the ground, facing forward
+- [ ] If backwards: set glb_rotation_y to 180 for that car and check again
+- [ ] Cars without a .glb still use the built-in body

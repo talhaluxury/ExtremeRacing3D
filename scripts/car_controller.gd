@@ -579,22 +579,79 @@ func _make_wheel_visual() -> Node3D:
     return root
 
 
+## Model file for this car: the "glb" path from car_data.gd, else
+## assets/cars/<id>/scene.gltf (a zipped Sketchfab download), scene.glb or <id>.gltf.
+func _find_model_path() -> String:
+    var cands: Array[String] = []
+    var p := str(data.get("glb", ""))
+    if p != "":
+        cands.append(p)
+    var id := str(data["id"])
+    for c: String in ["res://assets/cars/%s/scene.gltf", "res://assets/cars/%s/scene.glb", "res://assets/cars/%s.gltf"]:
+        cands.append(c % id)
+    for c: String in cands:
+        if ResourceLoader.exists(c):
+            return c
+    return ""
+
+
 func _try_load_glb() -> void:
-    var path: String = str(data.get("glb", ""))
-    if path == "" or not ResourceLoader.exists(path):
+    var path := _find_model_path()
+    if path == "":
         return
-    var res = load(path)
+    var res: Variant = load(path)
     if not (res is PackedScene):
         return
     var inst := (res as PackedScene).instantiate() as Node3D
     if inst == null:
         return
-    inst.scale = Vector3.ONE * float(data.get("glb_scale", 1.0))
-    inst.rotation.y = deg_to_rad(float(data.get("glb_rotation_y", 0.0)))
-    inst.position = data.get("glb_offset", Vector3.ZERO)
+    if bool(data.get("glb_autofit", true)):
+        _fit_glb(inst)
+    else:
+        inst.scale = Vector3.ONE * float(data.get("glb_scale", 1.0))
+        inst.rotation.y = deg_to_rad(float(data.get("glb_rotation_y", 0.0)))
+        inst.position = data.get("glb_offset", Vector3.ZERO)
     add_child(inst)
     _body_visual.queue_free()
     _tail_mats.clear()
     if bool(data.get("glb_has_wheels", false)):
         for v in _wheel_visuals:
             v.queue_free()
+
+
+## Scales the model to the car's length, turns its long side along the driving
+## direction (front = -Z, glTF models usually face +Z so it is turned 180
+## degrees; use "glb_rotation_y": 180 in car_data.gd if one comes out
+## backwards), centres it and puts its lowest point on the ground.
+func _fit_glb(inst: Node3D) -> void:
+    var box := _glb_bounds(inst, Transform3D.IDENTITY)
+    if box.size.length() < 0.01:
+        return
+    var yaw := 0.0
+    if box.size.x > box.size.z:
+        yaw = PI * 0.5
+    yaw += PI + deg_to_rad(float(data.get("glb_rotation_y", 0.0)))
+    var long_len := maxf(box.size.x, box.size.z)
+    var k := float(data["length"]) / long_len * float(data.get("glb_scale", 1.0))
+    var b := Basis(Vector3.UP, yaw) * Basis.from_scale(Vector3.ONE * k)
+    var center := box.get_center()
+    var bottom := Vector3(center.x, box.position.y, center.z)
+    var offset: Vector3 = data.get("glb_offset", Vector3.ZERO)
+    inst.transform = Transform3D(b, -(b * bottom) + offset)
+
+
+func _glb_bounds(n: Node, xf: Transform3D) -> AABB:
+    var out := AABB()
+    var have := false
+    if n is MeshInstance3D:
+        var mi := n as MeshInstance3D
+        if mi.mesh != null:
+            out = xf * mi.get_aabb()
+            have = true
+    for c in n.get_children():
+        if c is Node3D:
+            var sub := _glb_bounds(c, xf * (c as Node3D).transform)
+            if sub.size.length() > 0.0:
+                out = sub if not have else out.merge(sub)
+                have = true
+    return out

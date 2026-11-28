@@ -1,4 +1,4 @@
-# EXTREME RACING 3D (Phase 1 - 13)
+# EXTREME RACING 3D (Phase 1 - 14)
 
 Godot 4.3 (Mobile renderer), GDScript, landscape Android.
 
@@ -97,6 +97,10 @@ See tests/MANUAL_TEST_CHECKLIST.md.
 ## Phase 13 adds (Time Trial ghost)
 - TIME TRIAL now has a ghost: your fastest lap is recorded (20 samples a second, saved per track on the phone) and replayed as a transparent blue car on every later lap, so you can race your own best. The ghost appears after the first completed lap (or at once if a ghost was saved earlier). Ghosts are saved only for laps driven in Time Trial.
 - Real car models: put a `.glb` named after the car id (for example `assets/cars/supercar.glb`) in `assets/cars/`; the game already loads it instead of the procedural body (see the "glb" fields in `scripts/car_data.gd`). No GLB files are included because they could not be downloaded here.
+
+## Phase 14 adds (real car models, auto-fit)
+- Imported `.glb` cars are fitted automatically (scale to car length, long side forward, centred, on the ground). See `ASSETS_GUIDE.md` for where to download free models, licences, and `tools/add_car.sh` to add one from Termux.
+- Imported cars use their own wheels (they do not spin or steer yet) and their own paint.
 
 ## Run
 - PC: open folder in Godot 4.3, press F5. Keys: W/S gas/brake, A/D steer, Shift nitro, Space handbrake/drift, V change view, R reset, C next car.
