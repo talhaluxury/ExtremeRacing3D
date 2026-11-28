@@ -35,6 +35,7 @@ func _ready() -> void:
     add_child(_button)
 
     _root = Control.new()
+    _root.theme = UITheme.get_theme()
     _root.set_anchors_preset(Control.PRESET_FULL_RECT)
     _root.visible = false
     add_child(_root)
@@ -53,10 +54,10 @@ func _ready() -> void:
     title.text = "PAUSED"
     title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
     title.add_theme_font_size_override("font_size", 56)
-    title.add_theme_color_override("font_color", Color(1.0, 0.75, 0.15))
+    title.add_theme_color_override("font_color", UITheme.ACCENT_2)
     box.add_child(title)
 
-    _make(box, "RESUME", resume, Color(1.0, 0.85, 0.3))
+    _make(box, "RESUME", resume, UITheme.ACCENT_2)
     _make(box, "RESTART", func() -> void:
         _unpause()
         restart_requested.emit())

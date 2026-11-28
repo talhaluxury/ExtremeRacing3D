@@ -34,7 +34,7 @@ func _ready() -> void:
     title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
     title.add_theme_font_size_override("font_size", 52)
-    title.add_theme_color_override("font_color", Color(1.0, 0.75, 0.15))
+    title.add_theme_color_override("font_color", UITheme.ACCENT_2)
     head.add_child(title)
     _coins = Label.new()
     _coins.custom_minimum_size = Vector2(260, 0)
@@ -84,7 +84,7 @@ func _add_event(parent: Control, i: int) -> void:
     b.text = "%s      [%s]\n%s" % [line1, status, line2]
     b.disabled = not open
     if open and not passed:
-        b.modulate = Color(1.0, 0.9, 0.5)
+        b.modulate = Color(0.7, 0.95, 1.0)
     elif passed:
         b.modulate = Color(0.7, 1.0, 0.7)
     b.pressed.connect(func() -> void: start_event(i))

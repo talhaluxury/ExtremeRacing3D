@@ -8,8 +8,11 @@ var _items: Array[Dictionary] = []
 
 func _ready() -> void:
     layer = 10
-    _add("steer_left", "<", Vector2(0, 1), Vector2(130, -120), 85.0, true)
-    _add("steer_right", ">", Vector2(0, 1), Vector2(320, -120), 85.0, true)
+    if GameManager.steer_wheel:
+        _add_wheel()
+    else:
+        _add("steer_left", "<", Vector2(0, 1), Vector2(130, -120), 85.0, true)
+        _add("steer_right", ">", Vector2(0, 1), Vector2(320, -120), 85.0, true)
     _add("brake", "BRAKE", Vector2(1, 1), Vector2(-330, -105), 80.0, false)
     _add("accelerate", "GAS", Vector2(1, 1), Vector2(-135, -135), 105.0, false)
     _add("nitro", "NITRO", Vector2(1, 1), Vector2(-110, -330), 65.0, false)
@@ -68,6 +71,18 @@ func _add(action: String, text: String, anchor: Vector2, offset: Vector2, radius
 
     add_child(btn)
     _items.append({"action": action, "node": btn, "anchor": anchor, "offset": offset, "radius": radius})
+
+
+func _add_wheel() -> void:
+    var anchor := Vector2(0, 1)
+    var offset := Vector2(240, -215) * GameManager.touch_scale
+    if GameManager.touch_mirror:
+        anchor.x = 1.0
+        offset.x = -offset.x
+    var wheel := SteeringWheel.new()
+    wheel.radius = 135.0 * GameManager.touch_scale
+    add_child(wheel)
+    _items.append({"action": "steer_wheel", "node": wheel, "anchor": anchor, "offset": offset, "radius": 0.0})
 
 
 func _layout() -> void:

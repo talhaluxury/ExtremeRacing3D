@@ -16,6 +16,7 @@ var _next_btn: Button
 func _ready() -> void:
     layer = 20
     _root = Control.new()
+    _root.theme = UITheme.get_theme()
     _root.set_anchors_preset(Control.PRESET_FULL_RECT)
     _root.visible = false
     add_child(_root)
@@ -42,7 +43,7 @@ func _ready() -> void:
     _title = _label(box, 46)
     _body = _label(box, 30)
     _footer = _label(box, 28)
-    _footer.add_theme_color_override("font_color", Color(1.0, 0.8, 0.2))
+    _footer.add_theme_color_override("font_color", UITheme.ACCENT_2)
 
     var row := HBoxContainer.new()
     row.add_theme_constant_override("separation", 14)

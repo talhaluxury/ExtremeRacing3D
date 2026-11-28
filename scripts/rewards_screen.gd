@@ -18,9 +18,9 @@ func _build() -> void:
         _box.remove_child(c)
         c.queue_free()
 
-    _coins = UiKit.label(_box, "COINS:  %d" % SaveManager.coins, 34, Color(1.0, 0.85, 0.3))
+    _coins = UiKit.label(_box, "COINS:  %d" % SaveManager.coins, 34, UITheme.ACCENT_2)
 
-    UiKit.label(_box, "DAILY REWARD", 32, Color(1.0, 0.75, 0.15))
+    UiKit.label(_box, "DAILY REWARD", 32, UITheme.ACCENT_2)
     if SaveManager.daily_reward_available():
         var amount := SaveManager.daily_reward_amount()
         var b := UiKit.button(_box, "CLAIM  +%d COINS   (day %d of streak)" % [amount, SaveManager.next_streak()], _claim_daily, 700.0, 70.0, 28)
@@ -30,7 +30,7 @@ func _build() -> void:
     UiKit.label(_box, "A longer streak pays more (up to day 7).", 20, Color(0.7, 0.7, 0.75))
 
     UiKit.label(_box, "")
-    UiKit.label(_box, "RACE WIN MILESTONES   (wins: %d)" % SaveManager.races_won, 32, Color(1.0, 0.75, 0.15))
+    UiKit.label(_box, "RACE WIN MILESTONES   (wins: %d)" % SaveManager.races_won, 32, UITheme.ACCENT_2)
     for i in SaveManager.MILESTONES.size():
         var m: Array = SaveManager.MILESTONES[i]
         var need: int = m[0]

@@ -29,6 +29,7 @@ var rain: bool = false
 var render_scale: float = 0.0
 var touch_scale: float = 1.0
 var touch_mirror: bool = false
+var steer_wheel: bool = false
 
 var _tilt_down_axis: int = 1   # accelerometer axis that carries gravity when held level
 var _tilt_base: float = 0.0
@@ -52,6 +53,7 @@ func _load_graphics() -> void:
         render_scale = float(cfg.get_value("graphics", "render_scale", 0.0))
         touch_scale = clampf(float(cfg.get_value("controls", "touch_scale", 1.0)), 0.8, 1.25)
         touch_mirror = bool(cfg.get_value("controls", "touch_mirror", false))
+        steer_wheel = bool(cfg.get_value("controls", "steer_wheel", false))
 
 
 func _save_graphics() -> void:
@@ -62,6 +64,7 @@ func _save_graphics() -> void:
     cfg.set_value("graphics", "render_scale", render_scale)
     cfg.set_value("controls", "touch_scale", touch_scale)
     cfg.set_value("controls", "touch_mirror", touch_mirror)
+    cfg.set_value("controls", "steer_wheel", steer_wheel)
     cfg.set_value("controls", "tilt", tilt_enabled)
     cfg.set_value("controls", "tilt_sens", tilt_sensitivity)
     cfg.set_value("controls", "tilt_invert", tilt_invert)
@@ -106,6 +109,11 @@ func cycle_touch_scale() -> void:
 
 func toggle_touch_mirror() -> void:
     touch_mirror = not touch_mirror
+    _save_graphics()
+
+
+func toggle_steer_wheel() -> void:
+    steer_wheel = not steer_wheel
     _save_graphics()
 
 

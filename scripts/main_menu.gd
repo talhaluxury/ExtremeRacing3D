@@ -263,6 +263,7 @@ func _show_log() -> void:
     margin.set_anchors_preset(Control.PRESET_FULL_RECT)
     for side: String in ["margin_left", "margin_right", "margin_top", "margin_bottom"]:
         margin.add_theme_constant_override(side, 20)
+    margin.theme = UITheme.get_theme()
     layer.add_child(margin)
     var box := VBoxContainer.new()
     margin.add_child(box)

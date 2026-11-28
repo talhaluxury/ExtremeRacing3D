@@ -42,9 +42,9 @@ func _ready() -> void:
     tm.outer_radius = 4.25
     ring.mesh = tm
     _ring_mat = StandardMaterial3D.new()
-    _ring_mat.albedo_color = Color(1.0, 0.55, 0.05)
+    _ring_mat.albedo_color = Color(0.1, 0.75, 1.0)
     _ring_mat.emission_enabled = true
-    _ring_mat.emission = Color(1.0, 0.5, 0.05)
+    _ring_mat.emission = Color(0.1, 0.7, 1.0)
     _ring_mat.emission_energy_multiplier = 2.0
     ring.material_override = _ring_mat
     add_child(ring)

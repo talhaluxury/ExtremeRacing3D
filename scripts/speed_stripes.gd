@@ -18,7 +18,7 @@ func _draw() -> void:
         var x := -0.3 * w + f * 1.6 * w
         var y := h * (0.1 + 0.13 * float(i))
         var len_px := w * (0.25 + 0.08 * float(i % 3))
-        var col := Color(1.0, 0.55, 0.05, 0.05 + 0.02 * float(i % 3))
+        var col := Color(0.2, 0.7, 1.0, 0.05 + 0.02 * float(i % 3))
         var pts := PackedVector2Array([
             Vector2(x, y), Vector2(x + len_px, y),
             Vector2(x + len_px - 40.0, y + 8.0 + 3.0 * float(i % 3)), Vector2(x - 40.0, y + 8.0 + 3.0 * float(i % 3)),

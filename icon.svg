@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b1022"/><stop offset="1" stop-color="#1b2550"/></linearGradient>
-    <linearGradient id="ac" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ff7a00"/><stop offset="1" stop-color="#ffc926"/></linearGradient>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#050b1e"/><stop offset="1" stop-color="#10306a"/></linearGradient>
+    <linearGradient id="ac" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#19c7ff"/><stop offset="1" stop-color="#e6f7ff"/></linearGradient>
   </defs>
   <rect width="128" height="128" rx="26" fill="url(#bg)"/>
   <g transform="skewX(-14) translate(22 0)">
@@ -10,6 +10,6 @@
     <rect x="26" y="56" width="48" height="14" rx="3" fill="url(#ac)"/>
     <rect x="26" y="86" width="62" height="16" rx="3" fill="url(#ac)"/>
   </g>
-  <rect x="10" y="108" width="40" height="5" rx="2" fill="#ff7a00" opacity="0.8"/>
-  <rect x="58" y="108" width="24" height="5" rx="2" fill="#ffc926" opacity="0.8"/>
+  <rect x="10" y="108" width="40" height="5" rx="2" fill="#19c7ff" opacity="0.8"/>
+  <rect x="58" y="108" width="24" height="5" rx="2" fill="#e6f7ff" opacity="0.8"/>
 </svg>

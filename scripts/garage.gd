@@ -76,9 +76,9 @@ func _build_scene() -> void:
     tm.outer_radius = 6.1
     ring.mesh = tm
     var rm := StandardMaterial3D.new()
-    rm.albedo_color = Color(1.0, 0.75, 0.15)
+    rm.albedo_color = Color(0.1, 0.75, 1.0)
     rm.emission_enabled = true
-    rm.emission = Color(1.0, 0.7, 0.1)
+    rm.emission = Color(0.1, 0.7, 1.0)
     rm.emission_energy_multiplier = 1.5
     ring.material_override = rm
     ring.position = Vector3(0, 0.0, 0)
@@ -166,6 +166,7 @@ func _build_ui() -> void:
     var root := Control.new()
     root.set_anchors_preset(Control.PRESET_FULL_RECT)
     root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    root.theme = UITheme.get_theme()
     layer.add_child(root)
 
     # left panel
@@ -175,13 +176,6 @@ func _build_ui() -> void:
     panel.offset_top = 10.0
     panel.offset_right = 470.0
     panel.offset_bottom = -10.0
-    var sb := StyleBoxFlat.new()
-    sb.bg_color = Color(0.04, 0.04, 0.06, 0.88)
-    sb.border_color = Color(1.0, 0.75, 0.15, 0.8)
-    sb.set_border_width_all(2)
-    sb.set_corner_radius_all(10)
-    sb.set_content_margin_all(12)
-    panel.add_theme_stylebox_override("panel", sb)
     root.add_child(panel)
 
     var scroll := ScrollContainer.new()
@@ -192,7 +186,7 @@ func _build_ui() -> void:
     box.add_theme_constant_override("separation", 6)
     scroll.add_child(box)
 
-    _name = _label(box, 34, Color(1.0, 0.8, 0.25))
+    _name = _label(box, 34, UITheme.ACCENT_2)
     _status = _label(box, 22, Color.WHITE)
 
     for k: String in ["speed", "accel", "grip", "brake"]:
@@ -212,7 +206,7 @@ func _build_ui() -> void:
         v.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
         _bars[k] = {"bar": bar, "val": v}
 
-    var hu := _label(box, 22, Color(1.0, 0.8, 0.25))
+    var hu := _label(box, 22, UITheme.ACCENT_2)
     hu.text = "UPGRADES"
     for i in CarData.UPGRADES.size():
         var b := Button.new()
@@ -222,18 +216,18 @@ func _build_ui() -> void:
         box.add_child(b)
         _upg_btns.append(b)
 
-    var hp := _label(box, 22, Color(1.0, 0.8, 0.25))
+    var hp := _label(box, 22, UITheme.ACCENT_2)
     hp.text = "PAINT"
     _paint_lbl = _label(box, 20, Color.WHITE)
     _swatch_grid(box, CarData.PAINTS, _paint_btns, _on_paint)
 
-    var hw := _label(box, 22, Color(1.0, 0.8, 0.25))
+    var hw := _label(box, 22, UITheme.ACCENT_2)
     hw.text = "WHEELS"
     _wheel_lbl = _label(box, 20, Color.WHITE)
     _swatch_grid(box, CarData.WHEELS, _wheel_btns, _on_wheel)
 
     # coins (top right)
-    _coins = _label(root, 30, Color(1.0, 0.85, 0.3))
+    _coins = _label(root, 30, UITheme.ACCENT_2)
     _coins.set_anchors_preset(Control.PRESET_TOP_RIGHT)
     _coins.offset_left = -360.0
     _coins.offset_right = -20.0

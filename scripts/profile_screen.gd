@@ -17,13 +17,13 @@ func _ready() -> void:
         if SaveManager.is_track_unlocked(i):
             tracks_open += 1
 
-    UiKit.label(box, "COINS:  %d" % SaveManager.coins, 36, Color(1.0, 0.85, 0.3))
+    UiKit.label(box, "COINS:  %d" % SaveManager.coins, 36, UITheme.ACCENT_2)
     UiKit.label(box, "RACES WON:  %d" % SaveManager.races_won, 30)
     UiKit.label(box, "CARS OWNED:  %d / %d" % [cars_owned, CarData.CARS.size()], 30)
     UiKit.label(box, "CAREER EVENTS PASSED:  %d / %d" % [events_passed, CareerData.count()], 30)
     UiKit.label(box, "TRACKS UNLOCKED:  %d / %d" % [tracks_open, TrackData.count()], 30)
     UiKit.label(box, "")
-    UiKit.label(box, "BEST LAPS", 32, Color(1.0, 0.75, 0.15))
+    UiKit.label(box, "BEST LAPS", 32, UITheme.ACCENT_2)
     for i in TrackData.count():
         var t := RaceHud.format_time(SaveManager.get_best_lap(i))
         var text := "%s:   %s" % [TrackData.track_name(i), t]

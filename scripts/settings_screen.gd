@@ -13,6 +13,7 @@ var _sens: Button
 var _invert: Button
 var _size: Button
 var _mirror: Button
+var _wheel: Button
 
 
 func _ready() -> void:
@@ -39,8 +40,9 @@ func _ready() -> void:
     _invert = UiKit.button(right, "", _toggle_invert)
     _size = UiKit.button(right, "", _cycle_size)
     _mirror = UiKit.button(right, "", _toggle_mirror)
+    _wheel = UiKit.button(right, "", _toggle_wheel)
 
-    var note := UiKit.label(box, "Tilt: hold the phone the way you drive; it calibrates at the race start.\\nIf it steers the wrong way, switch TILT DIRECTION.", 20, Color(0.7, 0.7, 0.75))
+    var note := UiKit.label(box, "Tilt: hold the phone the way you drive; it calibrates at the race start.\nIf it steers the wrong way, switch TILT DIRECTION.", 20, Color(0.7, 0.7, 0.75))
     note.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
     _refresh()
 
@@ -57,6 +59,7 @@ func _refresh() -> void:
     _invert.text = "TILT DIRECTION:  " + ("INVERTED" if gm.tilt_invert else "NORMAL")
     _size.text = "TOUCH BUTTON SIZE:  %d%%" % roundi(gm.touch_scale * 100.0)
     _mirror.text = "CONTROL LAYOUT:  " + ("LEFT-HANDED" if gm.touch_mirror else "STANDARD")
+    _wheel.text = "STEERING:  " + ("WHEEL" if gm.steer_wheel else "BUTTONS")
     _sens.disabled = not gm.tilt_enabled
     _invert.disabled = not gm.tilt_enabled
 
@@ -111,6 +114,11 @@ func _toggle_invert() -> void:
 
 func _cycle_size() -> void:
     GameManager.cycle_touch_scale()
+    _refresh()
+
+
+func _toggle_wheel() -> void:
+    GameManager.toggle_steer_wheel()
     _refresh()
 
 
