@@ -6,24 +6,70 @@ extends Control
 
 
 func _ready() -> void:
+    # Theme and logo are loaded by path so a script error in them cannot
+    # stop this start-up check from running.
+    var theme_script: Variant = load("res://scripts/ui_theme.gd")
+    if theme_script is GDScript and (theme_script as GDScript).can_instantiate():
+        (theme_script as GDScript).call("apply", get_tree())
     var bg := ColorRect.new()
-    bg.color = Color(0.05, 0.05, 0.08)
+    bg.color = Color(0.035, 0.045, 0.075)
     bg.set_anchors_preset(Control.PRESET_FULL_RECT)
     add_child(bg)
+    var center := CenterContainer.new()
+    center.set_anchors_preset(Control.PRESET_FULL_RECT)
+    add_child(center)
+    var col := VBoxContainer.new()
+    col.add_theme_constant_override("separation", 22)
+    col.alignment = BoxContainer.ALIGNMENT_CENTER
+    center.add_child(col)
+    var logo_script: Variant = load("res://scripts/logo.gd")
+    if logo_script is GDScript and (logo_script as GDScript).can_instantiate():
+        var logo: Control = (logo_script as GDScript).call("make", col, 1.2)
+        logo.name = "Logo"
+    var bar := ProgressBar.new()
+    bar.custom_minimum_size = Vector2(520, 14)
+    bar.show_percentage = false
+    bar.max_value = 1.0
+    col.add_child(bar)
+    var msg := Label.new()
+    msg.text = "LOADING..."
+    msg.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    msg.add_theme_font_size_override("font_size", 18)
+    msg.add_theme_color_override("font_color", Color(0.62, 0.68, 0.8))
+    col.add_child(msg)
+
+    var started := Time.get_ticks_msec()
     var bad := PackedStringArray()
-    for f in _files("res://scripts", ".gd"):
-        if f == "boot.gd":
-            continue
-        var s: Resource = load("res://scripts/" + f)
-        if s == null or (s is GDScript and not (s as GDScript).can_instantiate()):
-            bad.append("scripts/" + f)
-    for f in _files("res://scenes", ".tscn"):
+    var scripts := _files("res://scripts", ".gd")
+    var scenes := _files("res://scenes", ".tscn")
+    var total := float(scripts.size() + scenes.size())
+    var done := 0.0
+    for f in scripts:
+        if f != "boot.gd":
+            var s: Resource = load("res://scripts/" + f)
+            if s == null or (s is GDScript and not (s as GDScript).can_instantiate()):
+                bad.append("scripts/" + f)
+        done += 1.0
+        bar.value = done / total
+        await get_tree().process_frame
+    for f in scenes:
         if load("res://scenes/" + f) == null:
             bad.append("scenes/" + f)
-    if bad.is_empty():
-        _go.call_deferred()
+        done += 1.0
+        bar.value = done / total
+        await get_tree().process_frame
+    if not bad.is_empty():
+        col.queue_free()
+        _show_errors(bad)
         return
-    _show_errors(bad)
+    msg.text = "READY"
+    var left := 1.6 - float(Time.get_ticks_msec() - started) / 1000.0
+    if left > 0.0:
+        await get_tree().create_timer(left).timeout
+    var tw := create_tween()
+    tw.tween_property(self, "modulate:a", 0.0, 0.25)
+    await tw.finished
+    _go()
 
 
 func _go() -> void:
@@ -50,7 +96,7 @@ func _files(dir: String, ext: String) -> PackedStringArray:
 func _show_errors(bad: PackedStringArray) -> void:
     var margin := MarginContainer.new()
     margin.set_anchors_preset(Control.PRESET_FULL_RECT)
-    for side in ["margin_left", "margin_right", "margin_top", "margin_bottom"]:
+    for side: String in ["margin_left", "margin_right", "margin_top", "margin_bottom"]:
         margin.add_theme_constant_override(side, 20)
     add_child(margin)
     var box := VBoxContainer.new()

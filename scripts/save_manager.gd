@@ -55,7 +55,15 @@ func submit_lap(track: int, lap_time: float) -> bool:
 
 # ---------------------------------------------------------------- garage
 
+## Testing switches: every car / track open from the start. Set both to
+## false for the real progression (buy cars with coins, unlock tracks in career).
+const UNLOCK_ALL_CARS := true
+const UNLOCK_ALL_TRACKS := true
+
+
 func is_owned(id: String) -> bool:
+    if UNLOCK_ALL_CARS:
+        return true
     if id == str(CarData.CARS[0]["id"]):
         return true   # the starter car is always owned
     return bool(_cfg.get_value("owned", id, false))
@@ -121,7 +129,7 @@ func set_wheel(id: String, index: int) -> void:
 # ---------------------------------------------------------------- tracks + career
 
 func is_track_unlocked(i: int) -> bool:
-    return i < 2 or bool(_cfg.get_value("tracks", str(i), false))
+    return UNLOCK_ALL_TRACKS or i < 2 or bool(_cfg.get_value("tracks", str(i), false))
 
 
 func unlock_track(i: int) -> void:

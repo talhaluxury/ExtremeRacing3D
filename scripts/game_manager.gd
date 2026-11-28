@@ -157,6 +157,11 @@ func tilt_steer() -> float:
     return -v if tilt_invert else v
 
 
+## Opens the loading screen, which then opens the race.
+func start_race() -> void:
+    get_tree().change_scene_to_file("res://scenes/loading.tscn")
+
+
 func next_unlocked_track(from: int) -> int:
     var n := TRACK_NAMES.size()
     for step in range(1, n + 1):

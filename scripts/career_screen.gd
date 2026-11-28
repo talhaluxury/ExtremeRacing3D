@@ -14,7 +14,7 @@ func _ready() -> void:
 
     var margin := MarginContainer.new()
     margin.set_anchors_preset(Control.PRESET_FULL_RECT)
-    for side in ["margin_left", "margin_right", "margin_top", "margin_bottom"]:
+    for side: String in ["margin_left", "margin_right", "margin_top", "margin_bottom"]:
         margin.add_theme_constant_override(side, 24)
     add_child(margin)
     var outer := VBoxContainer.new()
@@ -93,4 +93,4 @@ func _add_event(parent: Control, i: int) -> void:
 
 func start_event(i: int) -> void:
     CareerData.apply(i)
-    get_tree().change_scene_to_file("res://scenes/race.tscn")
+    GameManager.start_race()

@@ -614,9 +614,28 @@ func _try_load_glb() -> void:
     add_child(inst)
     _body_visual.queue_free()
     _tail_mats.clear()
-    if bool(data.get("glb_has_wheels", false)):
+    var hw: Variant = data.get("glb_has_wheels", "auto")
+    var has_wheels := _model_has_wheels(inst) if str(hw) == "auto" else bool(hw)
+    if has_wheels:
         for v in _wheel_visuals:
             v.queue_free()
+    print("car %s model %s wheels_in_model=%s" % [str(data["id"]), path, str(has_wheels)])
+
+
+## True when the imported model contains separate wheel parts (by node name).
+func _model_has_wheels(n: Node) -> bool:
+    var cnt := _count_wheel_nodes(n)
+    return cnt >= 4
+
+
+func _count_wheel_nodes(n: Node) -> int:
+    var c := 0
+    var nm := n.name.to_lower()
+    if nm.contains("wheel") or nm.contains("tire") or nm.contains("tyre"):
+        c += 1
+    for ch in n.get_children():
+        c += _count_wheel_nodes(ch)
+    return c
 
 
 ## Scales the model to the car's length, turns its long side along the driving

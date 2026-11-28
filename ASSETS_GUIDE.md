@@ -42,3 +42,18 @@ Read the licence file inside the zip (`license.txt`) before using a model.
 - Too big / small: change `"glb_scale"` (1.0 = the car's length from car_data, 1.1 = 10% longer).
 - Floats or sinks: `"glb_offset": Vector3(0, 0.05, 0)`.
 - Colour: imported models keep their own paint; garage paint colours apply only to the built-in body.
+
+## 5. Add all downloaded cars at once (Termux)
+```bash
+cd ~/ExtremeRacing3D
+bash tools/add_all.sh            # reads ~/storage/downloads/*.zip
+git add . && git commit -m "Add car models" && git push origin main
+```
+The script guesses the car from the zip name (dodge/challenger -> muscle_car, mclaren -> racing_supercar,
+ferrari -> supercar, porsche -> sports_coupe, lexus -> luxury_sedan ...), skips zips with no glb/gltf inside
+and anything over 95 MB. For a zip it does not recognise: `bash tools/add_car.sh <car_id> <zip>`.
+
+## 6. Wheels
+`"glb_has_wheels"` in car_data.gd: `"auto"` (default) uses the model's own wheels if it has parts named
+wheel/tire; `false` keeps the game's built-in wheels (use this for models without tyres, e.g. the Dodge);
+`true` forces the model's wheels.

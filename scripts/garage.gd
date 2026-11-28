@@ -195,7 +195,7 @@ func _build_ui() -> void:
     _name = _label(box, 34, Color(1.0, 0.8, 0.25))
     _status = _label(box, 22, Color.WHITE)
 
-    for k in ["speed", "accel", "grip", "brake"]:
+    for k: String in ["speed", "accel", "grip", "brake"]:
         var row := HBoxContainer.new()
         box.add_child(row)
         var l := _label(row, 20, Color(0.8, 0.8, 0.85))

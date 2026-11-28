@@ -7,12 +7,13 @@ extends RefCounted
 static func screen(root: Control, title_text: String, back_scene: String = "res://scenes/main_menu.tscn") -> VBoxContainer:
     root.set_anchors_preset(Control.PRESET_FULL_RECT)
     var bg := ColorRect.new()
-    bg.color = Color(0.05, 0.05, 0.08)
+    bg.color = UITheme.BG
     bg.set_anchors_preset(Control.PRESET_FULL_RECT)
     root.add_child(bg)
+    UITheme.backdrop(root)
     var margin := MarginContainer.new()
     margin.set_anchors_preset(Control.PRESET_FULL_RECT)
-    for side in ["margin_left", "margin_right", "margin_top", "margin_bottom"]:
+    for side: String in ["margin_left", "margin_right", "margin_top", "margin_bottom"]:
         margin.add_theme_constant_override(side, 24)
     root.add_child(margin)
     var outer := VBoxContainer.new()
@@ -22,7 +23,7 @@ static func screen(root: Control, title_text: String, back_scene: String = "res:
     var head := HBoxContainer.new()
     outer.add_child(head)
     var back := Button.new()
-    back.text = "< BACK"
+    back.text = "<  BACK"
     back.custom_minimum_size = Vector2(180, 60)
     back.add_theme_font_size_override("font_size", 28)
     back.pressed.connect(func() -> void: root.get_tree().change_scene_to_file(back_scene))
@@ -32,7 +33,7 @@ static func screen(root: Control, title_text: String, back_scene: String = "res:
     title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
     title.add_theme_font_size_override("font_size", 52)
-    title.add_theme_color_override("font_color", Color(1.0, 0.75, 0.15))
+    title.add_theme_color_override("font_color", UITheme.ACCENT_2)
     head.add_child(title)
     var spacer := Control.new()
     spacer.custom_minimum_size = Vector2(180, 0)

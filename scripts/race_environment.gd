@@ -145,7 +145,7 @@ func build(preset_index: int) -> void:
 
 ## Greyer sky and fog, weaker sun.
 func _make_rainy(p: Dictionary) -> void:
-    for key in ["sky_top", "sky_horizon", "fog", "cloud"]:
+    for key: String in ["sky_top", "sky_horizon", "fog", "cloud"]:
         var c: Color = p[key]
         var l := c.get_luminance()
         p[key] = c.lerp(Color(l, l, l) * 0.9, 0.65)

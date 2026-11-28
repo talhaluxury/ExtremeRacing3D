@@ -32,7 +32,7 @@ func _ready() -> void:
     var panel := PanelContainer.new()
     center.add_child(panel)
     var margin := MarginContainer.new()
-    for side in ["margin_left", "margin_right", "margin_top", "margin_bottom"]:
+    for side: String in ["margin_left", "margin_right", "margin_top", "margin_bottom"]:
         margin.add_theme_constant_override(side, 28)
     panel.add_child(margin)
     var box := VBoxContainer.new()
